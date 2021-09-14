@@ -4,17 +4,19 @@
 ## Write a short comment describing this function
 
 makeCacheMatrix <- function(x = matrix()) {
-  m <- NULL
+  inv <- NULL
   set <- function(y) {
     x <<- y
-    m <<- NULL
+    inv <<- NULL
   }
   get <- function() x
-  setInverse <- function(inverse) m <<- inverse
-  getInverse <- function() m
-  list(set = set, get = get,
-       setInverse = setInverse,
-       getInverse = getInverse)
+  setinverse <- function(inverse) inv <<- inverse
+  getinverse <- function() inv
+  list(set=set, 
+       get=get, 
+       setinverse=setinverse, 
+       getinverse=getinverse
+       )
 }
 
 
@@ -22,5 +24,35 @@ makeCacheMatrix <- function(x = matrix()) {
 
 cacheSolve <- function(x, ...) {
         ## Return a matrix that is the inverse of 'x'
-  
+  inv <- x$getinverse()
+  if(!is.null(inv)) {
+    message("getting cached data.")
+    return(inv)
+  }
+  data <- x$get()
+  inv <- solve(data)
+  x$setinverse(inv)
+  inv
 }
+
+## How to run:
+# > x = rbind(c(1, -1/8), c(-1/8, 1))
+# > m = makeCacheMatrix(x)
+# > m$get()
+
+# [,1]   [,2]
+# [1,]  1.000 -0.125
+# [2,] -0.125  1.000
+
+## No cache in the first run
+# > cacheSolve(m)
+# [,1]      [,2]
+# [1,] 1.0158730 0.1269841
+# [2,] 0.1269841 1.0158730
+
+## Retrieving from the cache in the second run
+# > cacheSolve(m)
+# getting cached data.
+#          [,1]      [,2]
+# [1,] 1.0158730 0.1269841
+# [2,] 0.1269841 1.0158730
